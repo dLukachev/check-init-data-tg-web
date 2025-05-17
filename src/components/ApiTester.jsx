@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './ApiTester.css';
 
-const API_BASE_URL = '/api/v1';
+const API_BASE_URL = 'https://backend-bar.onrender.com/api/v1';
 
 const ApiTester = () => {
   const [response, setResponse] = useState(null);
@@ -28,6 +28,7 @@ const ApiTester = () => {
         method,
         headers: {
           'Telegram-Init-Data': initData,
+          'Content-Type': 'application/json',
           ...headers
         }
       });
