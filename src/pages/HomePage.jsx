@@ -75,6 +75,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [backendUser, setBackendUser] = useState(null);
+  const [userRoles, setUserRoles] = useState([]);
 
   const authenticateUser = async () => {
     if (!ready || !telegramUser) return;
@@ -96,6 +97,12 @@ const HomePage = () => {
       // Fetch user data
       const userData = await userService.getCurrentUser();
       setBackendUser(userData);
+      
+      // Fetch user roles using the new endpoint
+      if (userData && userData.user && userData.user.id) {
+        const roles = await userService.getUserRoles(userData.user.id);
+        setUserRoles(roles);
+      }
       
       // Set the main button if needed
       if (tg?.MainButton) {
@@ -170,6 +177,16 @@ const HomePage = () => {
             <div className="card">
               <h3>Backend User Data</h3>
               <pre>{JSON.stringify(backendUser, null, 2)}</pre>
+            </div>
+          )}
+          {userRoles.length > 0 && (
+            <div className="card">
+              <h3>User Roles</h3>
+              <ul>
+                {userRoles.map(role => (
+                  <li key={role.id}>{role.name}</li>
+                ))}
+              </ul>
             </div>
           )}
         </>
