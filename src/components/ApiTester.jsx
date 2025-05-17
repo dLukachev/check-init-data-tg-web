@@ -1,48 +1,38 @@
 import { useState } from 'react';
 import './ApiTester.css';
 
-const API_BASE_URL = '/api/v1/simple';
+const API_BASE_URL = '/api/v1';
 
 const ApiTester = () => {
-  const [publicResponse, setPublicResponse] = useState(null);
-  const [protectedResponse, setProtectedResponse] = useState(null);
+  const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
 
   const formatJson = (data) => {
     return JSON.stringify(data, null, 2);
   };
 
-  const showResponse = (data, setter) => {
+  const showResponse = (data) => {
     setError(null);
-    setter(data);
+    setResponse(data);
   };
 
   const showError = (err) => {
-    setPublicResponse(null);
-    setProtectedResponse(null);
+    setResponse(null);
     setError(err.message || 'An error occurred');
   };
 
-  const callPublicEndpoint = async (endpoint) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`);
-      const data = await response.json();
-      showResponse(data, setPublicResponse);
-    } catch (err) {
-      showError(err);
-    }
-  };
-
-  const callProtectedEndpoint = async (endpoint) => {
+  const callEndpoint = async (endpoint, method = 'GET', headers = {}) => {
     try {
       const initData = window.Telegram.WebApp.initData;
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method,
         headers: {
-          'X-Telegram-Init-Data': initData
+          'Telegram-Init-Data': initData,
+          ...headers
         }
       });
       const data = await response.json();
-      showResponse(data, setProtectedResponse);
+      showResponse(data);
     } catch (err) {
       showError(err);
     }
@@ -51,39 +41,20 @@ const ApiTester = () => {
   return (
     <div className="api-tester">
       <div className="section">
-        <h2>Public Endpoints</h2>
+        <h2>Telegram Mini App Endpoints</h2>
         <div className="endpoint">
-          <button onClick={() => callPublicEndpoint('/public/hello')}>
-            Test /public/hello
+          <button onClick={() => callEndpoint('/auth/login/telegram', 'POST')}>
+            Login with Telegram
           </button>
         </div>
         <div className="endpoint">
-          <button onClick={() => callPublicEndpoint('/public/info')}>
-            Test /public/info
+          <button onClick={() => callEndpoint('/auth/tma-security')}>
+            Get Security Info
           </button>
         </div>
-        {publicResponse && (
+        {response && (
           <div className="response">
-            <pre>{formatJson(publicResponse)}</pre>
-          </div>
-        )}
-      </div>
-
-      <div className="section">
-        <h2>Protected Endpoints</h2>
-        <div className="endpoint">
-          <button onClick={() => callProtectedEndpoint('/protected/profile')}>
-            Test /protected/profile
-          </button>
-        </div>
-        <div className="endpoint">
-          <button onClick={() => callProtectedEndpoint('/protected/admin-only')}>
-            Test /protected/admin-only
-          </button>
-        </div>
-        {protectedResponse && (
-          <div className="response">
-            <pre>{formatJson(protectedResponse)}</pre>
+            <pre>{formatJson(response)}</pre>
           </div>
         )}
       </div>
