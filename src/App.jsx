@@ -1,19 +1,19 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { TelegramProvider } from './context/TelegramContext';
-import GlobalStyles from './styles/GlobalStyles';
-import HomePage from './pages/HomePage';
+import { useEffect } from 'react';
+import ApiTester from './components/ApiTester';
+import './App.css';
 
 function App() {
+  useEffect(() => {
+    // Initialize Telegram Mini App
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.enableClosingConfirmation();
+  }, []);
+
   return (
-    <TelegramProvider>
-      <GlobalStyles />
-      <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-        </Routes>
-      </Router>
-    </TelegramProvider>
+    <div className="app">
+      <ApiTester />
+    </div>
   );
 }
 
