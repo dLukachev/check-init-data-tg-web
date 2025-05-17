@@ -57,6 +57,13 @@ const InfoMessage = styled.div`
   margin-bottom: 20px;
 `;
 
+const Button = styled.button`
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+`;
+
 const HomePage = () => {
   const { 
     ready, 
@@ -69,46 +76,50 @@ const HomePage = () => {
   const [error, setError] = useState(null);
   const [backendUser, setBackendUser] = useState(null);
 
-  useEffect(() => {
-    const authenticateUser = async () => {
-      if (!ready || !telegramUser) return;
-      
-      // Don't attempt authentication if we know init data is missing
-      if (initDataError) {
-        console.log('Skipping authentication due to initData error');
-        return;
-      }
-      
-      setLoading(true);
-      setError(null);
-      
-      try {
-        // Try to authenticate with Telegram
-        const authResponse = await authService.loginWithTelegram();
-        console.log('Authentication successful:', authResponse);
-        
-        // Fetch user data
-        const userData = await userService.getCurrentUser();
-        setBackendUser(userData);
-        
-        // Set the main button if needed
-        if (tg?.MainButton) {
-          tg.MainButton.setText('Show More Actions');
-          tg.MainButton.show();
-          tg.MainButton.onClick(() => {
-            alert('Main button clicked!');
-          });
-        }
-      } catch (err) {
-        console.error('Error during authentication:', err);
-        setError('Failed to authenticate. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const authenticateUser = async () => {
+    if (!ready || !telegramUser) return;
     
+    // Don't attempt authentication if we know init data is missing
+    if (initDataError) {
+      console.log('Skipping authentication due to initData error');
+      return;
+    }
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Try to authenticate with Telegram
+      const authResponse = await authService.loginWithTelegram();
+      console.log('Authentication successful:', authResponse);
+      
+      // Fetch user data
+      const userData = await userService.getCurrentUser();
+      setBackendUser(userData);
+      
+      // Set the main button if needed
+      if (tg?.MainButton) {
+        tg.MainButton.setText('Show More Actions');
+        tg.MainButton.show();
+        tg.MainButton.onClick(() => {
+          alert('Main button clicked!');
+        });
+      }
+    } catch (err) {
+      console.error('Error during authentication:', err);
+      setError(err.message || 'Failed to authenticate. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     authenticateUser();
   }, [ready, telegramUser, tg, initDataError]);
+
+  const handleRetry = () => {
+    authenticateUser();
+  };
 
   if (!telegramAvailable) {
     return (
@@ -143,7 +154,12 @@ const HomePage = () => {
         </InfoMessage>
       )}
       
-      {error && <ErrorMessage>{error}</ErrorMessage>}
+      {error && (
+        <ErrorMessage>
+          {error}
+          <Button onClick={handleRetry}>Retry Authentication</Button>
+        </ErrorMessage>
+      )}
       
       {loading ? (
         <LoadingSpinner />

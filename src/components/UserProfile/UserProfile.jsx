@@ -21,9 +21,15 @@ const UserAvatar = styled.div`
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background-color: #ccc;
+  background-color: var(--tg-theme-button-color);
+  color: #fff;
   overflow: hidden;
   margin-right: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
   
   img {
     width: 100%;
@@ -90,12 +96,15 @@ const UserProfile = () => {
     );
   }
   
+  // Get first letter of first name for avatar fallback
+  const firstLetter = user.first_name?.charAt(0)?.toUpperCase() || user.last_name?.charAt(0)?.toUpperCase() || 'U';
+  
   return (
     <UserProfileContainer>
       <UserHeader>
         <UserAvatar>
-          {/* Telegram doesn't provide user photos through WebApp API */}
-          <img src={`https://via.placeholder.com/64/cccccc/fff?text=${user.first_name?.charAt(0) || 'U'}`} alt="Avatar" />
+          {/* Using just the letter for avatar instead of a placeholder image */}
+          {firstLetter}
         </UserAvatar>
         <UserInfo>
           <UserName>
