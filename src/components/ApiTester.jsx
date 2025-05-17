@@ -53,12 +53,42 @@ const ApiTester = () => {
             Get Security Info
           </button>
         </div>
-        {response && (
-          <div className="response">
-            <pre>{formatJson(response)}</pre>
-          </div>
-        )}
       </div>
+
+      <div className="section">
+        <h2>Role-Required Endpoints</h2>
+        <div className="endpoint">
+          <button onClick={() => callEndpoint('/roles')}>
+            Get All Roles
+          </button>
+        </div>
+        <div className="endpoint">
+          <button onClick={() => callEndpoint('/users/me')}>
+            Get My Profile
+          </button>
+        </div>
+        <div className="endpoint">
+          <button onClick={() => callEndpoint('/users/me/roles')}>
+            Get My Roles
+          </button>
+        </div>
+        <div className="endpoint">
+          <button onClick={() => callEndpoint('/restaurants')}>
+            Get Restaurants (Admin Only)
+          </button>
+        </div>
+        <div className="endpoint">
+          <button onClick={() => callEndpoint('/menu')}>
+            Get Menu (Admin Only)
+          </button>
+        </div>
+      </div>
+
+      {response && (
+        <div className="response">
+          <pre>{formatJson(response)}</pre>
+        </div>
+      )}
 
       {error && <div className="error">{error}</div>}
     </div>
